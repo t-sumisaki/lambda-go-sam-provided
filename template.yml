@@ -1,0 +1,33 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Parameters:
+  Environment:
+    Type: String
+    AllowedValues:
+      - dev
+      - stg
+      - prod
+    Default: dev
+
+Resources:
+  MyLambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub my-lambda-function-${Environment}
+      Runtime: provided.al2
+      Handler: bootstrap
+      CodeUri: ./
+      Events:
+        MyAPI:
+          Type: Api
+          Properties:
+            Path: /
+            Method: GET
+    Metadata:
+      BuildMethod: makefile
+
+Outputs:
+  ApiURL:
+    Description: URL of the API
+    Value: !Sub https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/prod/
